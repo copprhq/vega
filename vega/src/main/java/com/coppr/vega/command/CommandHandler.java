@@ -7,10 +7,10 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Handles a command and produces a result asynchronously.
  *
- * @param <T> the type of value produced when the command is handled successfully
+ * @param <R> the type of value produced when the command is handled successfully
  * @param <C> the type of command accepted by this handler
  */
-public interface CommandHandler<T, C extends Command> {
+public interface CommandHandler<R extends Response, C extends Command> {
 
     /**
      * Handles the given command.
@@ -22,6 +22,6 @@ public interface CommandHandler<T, C extends Command> {
      * @param command the command to handle
      * @return a future containing the result of handling the command
      */
-    CompletableFuture<Result<T>> handle(C command);
+    CompletableFuture<Result<R>> handle(C command);
 
 }
