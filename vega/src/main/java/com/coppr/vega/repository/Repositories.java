@@ -1,7 +1,9 @@
 package com.coppr.vega.repository;
 
 import com.coppr.supernova.extension.Extensible;
+import com.coppr.vega.repository.implementation.InMemoryRepository;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +17,32 @@ public class Repositories extends Extensible {
     public Repositories() {
     }
 
-    public static  <E, I, R extends Repository<E, I>> void addRepository(R repository) {
-        repositories.put(repository.getClass(), repository);
+    @SuppressWarnings("unchecked")
+    public static <K, E, R extends Repository<K, E>> R create(Class<R> repositoryClass) {
+        if (!repositoryClass.isInterface()) {
+            throw new IllegalStateException("repository must be interface");
+        }
+
+        InMemoryRepository<K, E> implementation =
+                new InMemoryRepository<>();
+
+        R repository = (R) Proxy.newProxyInstance(
+                repositoryClass.getClassLoader(),
+                new Class<?>[]{repositoryClass},
+                (proxy, method, args) -> method.invoke(
+                        implementation,
+                        args
+                )
+        );
+
+        repositories.put(repositoryClass, repository);
+
+        return repository;
     }
 
     @SuppressWarnings("unchecked")
-    public static  <E, I, R extends Repository<E, I>> E repository(Class<R> repositoryClass) {
-        return (E) repositories.get(repositoryClass);
+    public static <K, E, R extends Repository<K, E>> R repository(Class<R> repositoryClass) {
+        return (R) repositories.get(repositoryClass);
     }
 
     public static List<Repository<?, ?>> repositories() {

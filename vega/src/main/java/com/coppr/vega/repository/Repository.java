@@ -1,5 +1,6 @@
 package com.coppr.vega.repository;
 
+
 import com.coppr.supernova.functional.Result;
 
 import java.util.List;

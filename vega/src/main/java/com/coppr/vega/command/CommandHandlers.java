@@ -15,14 +15,14 @@ public class CommandHandlers extends Extensible {
     public CommandHandlers() {
     }
 
-    public <R extends Response, C extends Command> void addCommandHandler(
+    public <R, C> void create(
             CommandHandler<R, C> commandHandler
     ) {
         commandHandlers.put(commandHandler.getClass(), commandHandler);
     }
 
     @SuppressWarnings("unchecked")
-    public <R extends Response, C extends Command, H extends CommandHandler<R, C>> H commandHandler(
+    public <R, C, H extends CommandHandler<R, C>> H commandHandler(
             Class<H> commandHandlerClass
     ) {
         return (H) commandHandlers.get(commandHandlerClass);

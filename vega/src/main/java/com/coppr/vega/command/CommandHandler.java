@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  * @param <R> the type of value produced when the command is handled successfully
  * @param <C> the type of command accepted by this handler
  */
-public interface CommandHandler<R extends Response, C extends Command> {
+public interface CommandHandler<R, C> {
 
     /**
      * Handles the given command.

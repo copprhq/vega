@@ -44,4 +44,9 @@ public record Environment(String key, String value) {
             throw new IllegalStateException("Environment must be KEY=VALUE format");
         return new Environment(parts[0], parts[1]);
     }
+
+    @Override
+    public String toString() {
+        return key + "=" + value;
+    }
 }
