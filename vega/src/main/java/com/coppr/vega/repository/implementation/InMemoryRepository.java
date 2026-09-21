@@ -9,6 +9,7 @@ import com.coppr.vega.repository.Repository;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +23,8 @@ public class InMemoryRepository<K, E> implements Repository<K, E> {
     @SuppressWarnings("unchecked")
     @Override
     public Result<E> save(E entity) {
+        Objects.requireNonNull(entity);
+
         K key = null;
 
         IdentityMissingException identityMissingException = new IdentityMissingException(
@@ -54,17 +57,29 @@ public class InMemoryRepository<K, E> implements Repository<K, E> {
 
     @Override
     public Result<Void> delete(K key) {
+        Objects.requireNonNull(key);
         entities.remove(key);
         return Result.successful();
     }
 
     @Override
     public Optional<E> find(K key) {
+        Objects.requireNonNull(key);
         return Optional.ofNullable(entities.get(key));
+    }
+
+    @Override
+    public Optional<E> findFirst() {
+        return entities.values().stream().findFirst();
     }
 
     @Override
     public List<E> all() {
         return List.copyOf(entities.values());
+    }
+
+    @Override
+    public int count() {
+        return entities.size();
     }
 }

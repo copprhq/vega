@@ -38,10 +38,14 @@ public interface Repository<K, E> {
      */
     Optional<E> find(K key);
 
+    Optional<E> findFirst();
+
     /**
      * Retrieves all entities stored in the repository.
      *
      * @return a list containing all stored entities
      */
     List<E> all();
+
+    int count();
 }

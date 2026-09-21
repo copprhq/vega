@@ -1,7 +1,7 @@
 package com.coppr.vega.repository;
 
 import com.coppr.supernova.extension.Extensible;
-import com.coppr.vega.repository.implementation.InMemoryRepository;
+import com.coppr.vega.Properties;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Repositories extends Extensible {
 
+    private static final Properties properties = Properties.getInstance();
+
     private static final Map<Class<?>, Repository<?, ?>> repositories =
             new ConcurrentHashMap<>();
 
@@ -18,21 +20,23 @@ public class Repositories extends Extensible {
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, E, R extends Repository<K, E>> R create(Class<R> repositoryClass) {
+    private static <K, E, R extends Repository<K, E>> R create(Class<R> repositoryClass) {
         if (!repositoryClass.isInterface()) {
             throw new IllegalStateException("repository must be interface");
         }
 
-        InMemoryRepository<K, E> implementation =
-                new InMemoryRepository<>();
+        Class<?>[] types = RepositoryTypes.resolve(repositoryClass);
+
+        Class<K> keyType = (Class<K>) types[0];
+        Class<E> entityType = (Class<E>) types[1];
+
+        Repository<K, E> implementation = properties.repositoryProvider()
+                .create(repositoryClass, keyType, entityType);
 
         R repository = (R) Proxy.newProxyInstance(
                 repositoryClass.getClassLoader(),
                 new Class<?>[]{repositoryClass},
-                (proxy, method, args) -> method.invoke(
-                        implementation,
-                        args
-                )
+                new RepositoryInvocationHandler<>(implementation)
         );
 
         repositories.put(repositoryClass, repository);
@@ -41,8 +45,8 @@ public class Repositories extends Extensible {
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, E, R extends Repository<K, E>> R repository(Class<R> repositoryClass) {
-        return (R) repositories.get(repositoryClass);
+    public static <K, E, R extends Repository<K, E>> R get(Class<R> repositoryClass) {
+        return (R) repositories.getOrDefault(repositoryClass, create(repositoryClass));
     }
 
     public static List<Repository<?, ?>> repositories() {
