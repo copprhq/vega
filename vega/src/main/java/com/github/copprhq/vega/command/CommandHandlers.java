@@ -1,4 +1,4 @@
-package com.coppr.vega.command;
+package com.github.copprhq.vega.command;
 
 import com.coppr.supernova.extension.Extensible;
 

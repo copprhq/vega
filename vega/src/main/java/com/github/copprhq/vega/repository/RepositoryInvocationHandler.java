@@ -1,6 +1,4 @@
-package com.coppr.vega.repository;
-
-import com.coppr.vega.repository.implementation.InMemoryRepository;
+package com.github.copprhq.vega.repository;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

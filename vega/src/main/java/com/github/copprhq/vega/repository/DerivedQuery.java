@@ -1,4 +1,4 @@
-package com.coppr.vega.repository;
+package com.github.copprhq.vega.repository;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

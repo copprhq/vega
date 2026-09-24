@@ -1,4 +1,4 @@
-package com.coppr.vega.repository;
+package com.github.copprhq.vega.repository;
 
 
 import com.coppr.supernova.functional.Result;

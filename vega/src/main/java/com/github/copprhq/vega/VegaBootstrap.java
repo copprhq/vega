@@ -1,9 +1,9 @@
-package com.coppr.vega;
+package com.github.copprhq.vega;
 
-import com.coppr.vega.application.Application;
-import com.coppr.vega.application.ApplicationContext;
-import com.coppr.vega.repository.Repositories;
-import com.coppr.vega.repository.Repository;
+import com.github.copprhq.vega.application.Application;
+import com.github.copprhq.vega.application.ApplicationContext;
+import com.github.copprhq.vega.repository.Repositories;
+import com.github.copprhq.vega.repository.Repository;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;

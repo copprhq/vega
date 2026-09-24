@@ -1,4 +1,4 @@
-package com.coppr.vega.application;
+package com.github.copprhq.vega.application;
 
 public abstract class Application {
 

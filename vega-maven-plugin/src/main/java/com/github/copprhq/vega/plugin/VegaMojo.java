@@ -1,4 +1,4 @@
-package com.coppr.vega.plugin;
+package com.github.copprhq.vega.plugin;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;

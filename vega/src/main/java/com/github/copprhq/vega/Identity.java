@@ -1,4 +1,4 @@
-package com.coppr.vega;
+package com.github.copprhq.vega;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

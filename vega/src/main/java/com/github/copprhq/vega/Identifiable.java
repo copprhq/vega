@@ -1,4 +1,4 @@
-package com.coppr.vega;
+package com.github.copprhq.vega;
 
 public interface Identifiable<I> {
 

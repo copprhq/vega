@@ -1,10 +1,10 @@
-package com.coppr.vega.repository.implementation;
+package com.github.copprhq.vega.repository.implementation;
 
 import com.coppr.supernova.functional.Result;
-import com.coppr.vega.Identifiable;
-import com.coppr.vega.Identity;
-import com.coppr.vega.IdentityMissingException;
-import com.coppr.vega.repository.Repository;
+import com.github.copprhq.vega.Identifiable;
+import com.github.copprhq.vega.Identity;
+import com.github.copprhq.vega.IdentityMissingException;
+import com.github.copprhq.vega.repository.Repository;
 
 import java.lang.reflect.Field;
 import java.util.List;

@@ -1,7 +1,7 @@
-package com.coppr.vega;
+package com.github.copprhq.vega;
 
-import com.coppr.vega.repository.provider.InMemoryRepositoryProvider;
-import com.coppr.vega.repository.provider.RepositoryProvider;
+import com.github.copprhq.vega.repository.provider.InMemoryRepositoryProvider;
+import com.github.copprhq.vega.repository.provider.RepositoryProvider;
 
 public abstract class Properties {
 

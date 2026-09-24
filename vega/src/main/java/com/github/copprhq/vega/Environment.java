@@ -1,4 +1,4 @@
-package com.coppr.vega;
+package com.github.copprhq.vega;
 
 /**
  * Represents an environment variable as a key-value pair.

@@ -1,7 +1,7 @@
-package com.coppr.vega.repository.provider;
+package com.github.copprhq.vega.repository.provider;
 
-import com.coppr.vega.repository.Repository;
-import com.coppr.vega.repository.implementation.InMemoryRepository;
+import com.github.copprhq.vega.repository.Repository;
+import com.github.copprhq.vega.repository.implementation.InMemoryRepository;
 
 public class InMemoryRepositoryProvider implements RepositoryProvider {
 

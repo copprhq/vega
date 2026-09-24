@@ -1,6 +1,6 @@
-package com.coppr.vega.repository.provider;
+package com.github.copprhq.vega.repository.provider;
 
-import com.coppr.vega.repository.Repository;
+import com.github.copprhq.vega.repository.Repository;
 
 public interface RepositoryProvider {
 

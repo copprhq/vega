@@ -1,7 +1,7 @@
-package com.coppr.vega.repository;
+package com.github.copprhq.vega.repository;
 
 import com.coppr.supernova.extension.Extensible;
-import com.coppr.vega.Properties;
+import com.github.copprhq.vega.Properties;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
