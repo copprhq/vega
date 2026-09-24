@@ -4,7 +4,7 @@ import com.coppr.vega.repository.provider.InMemoryRepositoryProvider;
 import com.coppr.vega.repository.provider.RepositoryProvider;
 
 public abstract class Properties {
-    
+
     private static Properties INSTANCE;
 
     public static Properties getInstance() {
@@ -14,15 +14,15 @@ public abstract class Properties {
         return INSTANCE;
     }
 
-    public static class VegaProperties extends Properties {
-    }
-    
     protected Properties() {
         INSTANCE = this;
     }
 
     public RepositoryProvider repositoryProvider() {
         return new InMemoryRepositoryProvider();
+    }
+
+    public static class VegaProperties extends Properties {
     }
 
 }

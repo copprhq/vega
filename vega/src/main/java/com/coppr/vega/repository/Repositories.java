@@ -7,22 +7,29 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Repositories extends Extensible {
 
-    private static final Properties properties = Properties.getInstance();
-
-    private static final Map<Class<?>, Repository<?, ?>> repositories =
+    private final Map<Class<?>, Repository<?, ?>> repositories =
             new ConcurrentHashMap<>();
+    private final Properties properties;
 
-    public Repositories() {
+    public Repositories(Properties properties) {
+        this.properties = Objects.requireNonNull(properties);
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, E, R extends Repository<K, E>> R create(Class<R> repositoryClass) {
+    public <K, E, R extends Repository<K, E>> R create(Class<R> repositoryClass) {
+        Objects.requireNonNull(repositoryClass);
+
         if (!repositoryClass.isInterface()) {
             throw new IllegalStateException("repository must be interface");
+        }
+
+        if (!Repository.class.isAssignableFrom(repositoryClass)) {
+            throw new IllegalStateException("Interface " + repositoryClass.getName() + " does not extend Repository");
         }
 
         Class<?>[] types = RepositoryTypes.resolve(repositoryClass);
@@ -45,11 +52,12 @@ public class Repositories extends Extensible {
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, E, R extends Repository<K, E>> R get(Class<R> repositoryClass) {
+    public <K, E, R extends Repository<K, E>> R get(Class<R> repositoryClass) {
+        Objects.requireNonNull(repositoryClass);
         return (R) repositories.getOrDefault(repositoryClass, create(repositoryClass));
     }
 
-    public static List<Repository<?, ?>> repositories() {
+    public List<Repository<?, ?>> repositories() {
         return new ArrayList<>(repositories.values());
     }
 
