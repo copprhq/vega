@@ -31,7 +31,6 @@
     <modules>
         <module>vega</module>
         <module>vega-maven-plugin</module>
-        <module>example</module>
     </modules>
 
     <properties>
