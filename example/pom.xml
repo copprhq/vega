@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.coppr.vega</groupId>
         <artifactId>vega-parent</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4</version>
     </parent>
 
     <artifactId>example</artifactId>
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.coppr.vega</groupId>
             <artifactId>vega</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4</version>
         </dependency>
 
         <dependency>
@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>com.coppr.vega</groupId>
                 <artifactId>vega-maven-plugin</artifactId>
-                <version>0.0.3</version>
+                <version>0.0.4</version>
                 <executions>
                     <execution>
                         <goals>
