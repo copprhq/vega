@@ -1,29 +1,86 @@
 package com.github.copprhq.vega.application;
 
 import com.github.copprhq.vega.Properties;
-import com.github.copprhq.vega.command.CommandHandlers;
-import com.github.copprhq.vega.repository.Repositories;
+import com.github.copprhq.vega.repository.Repository;
+import com.github.copprhq.vega.repository.RepositoryInvocationHandler;
+import com.github.copprhq.vega.repository.RepositoryTypes;
 
-import java.util.HashMap;
-import java.util.List;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
-public record ApplicationContext(
-        Properties properties, CommandHandlers commandHandlers, Repositories repositories) {
+public final class ApplicationContext {
 
-    private static final Map<Class<?>, Object> containers = new HashMap<>();
+    private final Map<Class<?>, Object> beans = new ConcurrentHashMap<>();
 
-    public <T> ApplicationContext addBean(T bean) {
-        containers.put(bean.getClass(), bean);
-        return this;
+    public <T> T createBean(Class<T> beanType) {
+        try {
+            Constructor<?>[] constructors = beanType.getDeclaredConstructors();
+            if (constructors.length != 1) {
+                throw new IllegalStateException("Bean " + beanType.getName()
+                                + " must have exactly one constructor");
+            }
+
+            Constructor<?> constructor = beanType.getDeclaredConstructors()[0];
+
+            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            Object[] dependencies = new Object[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                dependencies[i] = getBean(parameterTypes[i]);
+            }
+
+            return beanType.cast(constructor.newInstance(dependencies));
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getBean(Class<T> beanClass) {
-        return (T) containers.get(beanClass);
+    public <R> R createRepository(Class<R> repositoryType) {
+        Objects.requireNonNull(repositoryType);
+
+        if (!repositoryType.isInterface()) throw new IllegalStateException("repository must be interface");
+
+        if (!Repository.class.isAssignableFrom(repositoryType)) {
+            throw new IllegalStateException("Interface " + repositoryType.getName() +
+                    " does not extend Repository");
+        }
+
+        Class<?>[] types = RepositoryTypes.resolve(repositoryType);
+
+        Class<?> keyType = types[0];
+        Class<?> entityType = types[1];
+
+        Repository<?, ?> implementation = getBean(Properties.class).repositoryProvider()
+                .create(repositoryType, keyType, entityType);
+
+        return (R) Proxy.newProxyInstance(repositoryType.getClassLoader(),
+                new Class<?>[]{repositoryType}, new RepositoryInvocationHandler<>(implementation));
     }
 
-    public List<Object> getBeans() {
-        return List.copyOf(containers.values());
+    public <T> T getBean(Class<T> beanType) {
+        Objects.requireNonNull(beanType);
+
+        Object existing = beans.get(beanType);
+        if (existing != null) {
+            return beanType.cast(existing);
+        }
+
+        if (Repository.class.isAssignableFrom(beanType) && beanType.isInterface()) {
+            T repository = createRepository(beanType);
+            beans.put(beanType, repository);
+            return repository;
+        }
+
+        T bean = createBean(beanType);
+        beans.put(beanType, bean);
+        return bean;
+    }
+
+    public void addBean(Class<?> type, Object bean) {
+        beans.put(type, bean);
     }
 }

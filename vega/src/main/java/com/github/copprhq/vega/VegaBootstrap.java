@@ -1,10 +1,9 @@
 package com.github.copprhq.vega;
 
-import com.github.copprhq.vega.application.Application;
+import com.github.copprhq.vega.application.VegaApplication;
 import com.github.copprhq.vega.application.ApplicationContext;
 import com.github.copprhq.vega.command.CommandHandler;
-import com.github.copprhq.vega.command.CommandHandlers;
-import com.github.copprhq.vega.repository.Repositories;
+import com.github.copprhq.vega.component.Component;
 import com.github.copprhq.vega.repository.Repository;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -16,64 +15,44 @@ public final class VegaBootstrap {
     private VegaBootstrap() {
     }
 
-    @SuppressWarnings("unchecked")
     public static void main(String[] args) {
         System.out.println("Starting Vega bootstrap...");
 
         try (ScanResult scanResult = new ClassGraph().enableAllInfo().scan()) {
-            ClassInfoList applications = scanResult.getSubclasses(Application.class.getName());
+            ClassInfoList applications = scanResult.getSubclasses(VegaApplication.class);
             if (applications.isEmpty()) {
-                throw new IllegalStateException("No Application subclass found.");
+                throw new IllegalStateException("No VegaApplication subclass found.");
             }
-
             if (applications.size() > 1) {
-                throw new IllegalStateException("Multiple Application subclasses found: " +
-                        applications.getNames());
+                throw new IllegalStateException("Multiple VegaApplication subclasses found: "
+                                + applications.getNames());
             }
 
             Class<?> applicationClass = applications.getFirst().loadClass();
             String applicationPackage = applicationClass.getPackageName();
-
-            Properties properties = new Properties.VegaProperties();
-
-            Repositories repositories = new Repositories(properties);
-            CommandHandlers commandHandlers = new CommandHandlers();
+            ApplicationContext context = new ApplicationContext();
 
             for (ClassInfo info : scanResult.getAllClasses()) {
                 if (!info.getPackageName().startsWith(applicationPackage)) continue;
 
                 Class<?> candidate = info.loadClass();
+                if (candidate.equals(applicationClass)) continue;
+                if (candidate.isAnnotationPresent(DependencyInjection.Ignore.class)) continue;
 
-                if (Properties.class.isAssignableFrom(candidate) && !candidate.equals(Properties.class)) {
-                    Properties properties1 = (Properties) candidate.getDeclaredConstructor().newInstance();
-                    properties = properties1;
+                boolean eligible = Repository.class.isAssignableFrom(candidate)
+                                || CommandHandler.class.isAssignableFrom(candidate)
+                                || candidate.isAnnotationPresent(Component.class)
+                                || candidate.isAnnotationPresent(DependencyInjection.class);
 
-                    repositories = new Repositories(properties1);
-                    continue;
-                }
+                if (!eligible) continue;
 
-                if (candidate.isInterface()) {
-                    if (Repository.class.isAssignableFrom(candidate)) {
-                        repositories.create((Class<? extends Repository>) candidate);
-                        continue;
-                    }
-
-                    if (CommandHandler.class.isAssignableFrom(candidate)) {
-                        CommandHandler<?, ?> commandHandler = (CommandHandler<?, ?>) candidate.
-                                getDeclaredConstructor().
-                                newInstance();
-                        commandHandlers.create(commandHandler);
-                    }
-                }
+                context.addBean(candidate, context.getBean(candidate));
             }
 
-            ApplicationContext applicationContext = new ApplicationContext(
-                    properties, commandHandlers, repositories);
+            VegaApplication application = (VegaApplication) context.createBean(applicationClass);
+            application.setApplicationContext(context);
 
-            Application application = (Application) applicationClass.getDeclaredConstructor().newInstance();
-            application.setContext(applicationContext);
-
-
+            System.out.println("started");
         } catch (Throwable throwable) {
             System.out.println("Failure on starting Vega bootstrap:");
             System.out.println(throwable.getMessage());

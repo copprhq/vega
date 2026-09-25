@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class Repositories extends Extensible {
 
     private final Map<Class<?>, Repository<?, ?>> repositories =

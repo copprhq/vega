@@ -10,16 +10,13 @@ public final class DerivedQuery {
     private DerivedQuery() {
     }
 
-    public static <K, E> Object execute(Repository<K, E> repository, Method method,
-                                        Object[] args) {
+    public static <K, E> Object execute(Repository<K, E> repository, Method method, Object[] args) {
         String methodName = method.getName();
         if (methodName.startsWith("findBy")) {
             return findBy(repository, method, args);
         }
 
-        throw new UnsupportedOperationException(
-                "Unsupported repository method: " + methodName
-        );
+        throw new UnsupportedOperationException("Unsupported repository method: " + methodName);
     }
 
     private static <K, E> Optional<E> findBy(Repository<K, E> repository, Method method,
@@ -37,11 +34,8 @@ public final class DerivedQuery {
                     return Optional.of(entity);
                 }
             } catch (NoSuchFieldException ignored) {
-                throw new IllegalStateException(
-                        "No property '" + property +
-                                "' exists on " +
-                                entity.getClass().getName()
-                );
+                throw new IllegalStateException("No property '" + property +
+                        "' exists on " + entity.getClass().getName());
             } catch (IllegalAccessException exception) {
                 throw new IllegalStateException(exception);
             }
@@ -55,7 +49,6 @@ public final class DerivedQuery {
             return value;
         }
 
-        return Character.toLowerCase(value.charAt(0))
-                + value.substring(1);
+        return Character.toLowerCase(value.charAt(0)) + value.substring(1);
     }
 }

@@ -14,16 +14,12 @@ public final class RepositoryTypes {
                 if (parameterizedType.getRawType() == Repository.class) {
                     Type[] arguments = parameterizedType.getActualTypeArguments();
 
-                    return new Class<?>[]{
-                            (Class<?>) arguments[0],
-                            (Class<?>) arguments[1]
+                    return new Class<?>[]{(Class<?>) arguments[0], (Class<?>) arguments[1]
                     };
                 }
             }
         }
 
-        throw new IllegalStateException(
-                "Repository must extend Repository<K, E>"
-        );
+        throw new IllegalStateException("Repository must extend Repository<K, E>");
     }
 }
