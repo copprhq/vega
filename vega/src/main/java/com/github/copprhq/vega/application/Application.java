@@ -7,11 +7,11 @@ public abstract class Application {
     public Application() {
     }
 
-    public ApplicationContext getContext() {
+    public final ApplicationContext getContext() {
         return context;
     }
 
-    public void setContext(ApplicationContext context) {
+    public final void setContext(ApplicationContext context) {
         this.context = context;
     }
 }

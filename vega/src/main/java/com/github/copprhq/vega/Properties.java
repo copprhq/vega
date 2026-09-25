@@ -5,17 +5,7 @@ import com.github.copprhq.vega.repository.provider.RepositoryProvider;
 
 public abstract class Properties {
 
-    private static Properties INSTANCE;
-
-    public static Properties getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new VegaProperties();
-        }
-        return INSTANCE;
-    }
-
-    protected Properties() {
-        INSTANCE = this;
+    public Properties() {
     }
 
     public RepositoryProvider repositoryProvider() {

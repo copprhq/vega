@@ -2,6 +2,8 @@ package com.github.copprhq.vega;
 
 import com.github.copprhq.vega.application.Application;
 import com.github.copprhq.vega.application.ApplicationContext;
+import com.github.copprhq.vega.command.CommandHandler;
+import com.github.copprhq.vega.command.CommandHandlers;
 import com.github.copprhq.vega.repository.Repositories;
 import com.github.copprhq.vega.repository.Repository;
 import io.github.classgraph.ClassGraph;
@@ -32,8 +34,10 @@ public final class VegaBootstrap {
             Class<?> applicationClass = applications.getFirst().loadClass();
             String applicationPackage = applicationClass.getPackageName();
 
-            Properties properties = Properties.getInstance();
-            Repositories repositories = null;
+            Properties properties = new Properties.VegaProperties();
+
+            Repositories repositories = new Repositories(properties);
+            CommandHandlers commandHandlers = new CommandHandlers();
 
             for (ClassInfo info : scanResult.getAllClasses()) {
                 if (!info.getPackageName().startsWith(applicationPackage)) continue;
@@ -41,23 +45,35 @@ public final class VegaBootstrap {
                 Class<?> candidate = info.loadClass();
 
                 if (Properties.class.isAssignableFrom(candidate) && !candidate.equals(Properties.class)) {
-                    properties = (Properties) candidate.getDeclaredConstructor().newInstance();
+                    Properties properties1 = (Properties) candidate.getDeclaredConstructor().newInstance();
+                    properties = properties1;
+
+                    repositories = new Repositories(properties1);
                     continue;
                 }
 
-                if (candidate.isInterface() && Repository.class.isAssignableFrom(candidate)) {
-                    repositories = new Repositories(properties);
-                    repositories.create((Class<? extends Repository>) candidate);
+                if (candidate.isInterface()) {
+                    if (Repository.class.isAssignableFrom(candidate)) {
+                        repositories.create((Class<? extends Repository>) candidate);
+                        continue;
+                    }
+
+                    if (CommandHandler.class.isAssignableFrom(candidate)) {
+                        CommandHandler<?, ?> commandHandler = (CommandHandler<?, ?>) candidate.
+                                getDeclaredConstructor().
+                                newInstance();
+                        commandHandlers.create(commandHandler);
+                    }
                 }
             }
 
-            ApplicationContext applicationContext = new ApplicationContext();
-            applicationContext.addBean(properties).addBean(repositories);
+            ApplicationContext applicationContext = new ApplicationContext(
+                    properties, commandHandlers, repositories);
 
             Application application = (Application) applicationClass.getDeclaredConstructor().newInstance();
             application.setContext(applicationContext);
 
-            System.out.println("started");
+
         } catch (Throwable throwable) {
             System.out.println("Failure on starting Vega bootstrap:");
             System.out.println(throwable.getMessage());
