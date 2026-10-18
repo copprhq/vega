@@ -12,7 +12,6 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/autoinject/pom.xml" />
-        <option value="$PROJECT_DIR$/example/pom.xml" />
       </set>
     </option>
   </component>

@@ -6,7 +6,7 @@
 
     <groupId>com.github.copprhq.vega</groupId>
     <artifactId>vega-parent</artifactId>
-    <version>0.0.9</version>
+    <version>0.0.10</version>
     <packaging>pom</packaging>
 
     <name>Vega</name>
@@ -31,6 +31,7 @@
     <modules>
         <module>vega</module>
         <module>vega-maven-plugin</module>
+        <module>example</module>
     </modules>
 
     <properties>

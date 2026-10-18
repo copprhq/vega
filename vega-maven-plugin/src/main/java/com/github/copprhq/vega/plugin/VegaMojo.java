@@ -27,7 +27,10 @@ public class VegaMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
 
-    @Parameter(property = "vega.mainClass", defaultValue = "com.coppr.vega.VegaBootstrap")
+    @Parameter(
+            property = "vega.mainClass",
+            defaultValue = "com.github.copprhq.vega.bootstrap.VegaBootstrap"
+    )
     private String mainClass;
 
     @Override

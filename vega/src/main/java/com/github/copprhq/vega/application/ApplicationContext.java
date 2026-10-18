@@ -69,7 +69,7 @@ public final class ApplicationContext {
             return beanType.cast(existing);
         }
 
-        if (Repository.class.isAssignableFrom(beanType) && beanType.isInterface()) {
+        if (Repository.class.isAssignableFrom(beanType)) {
             T repository = createRepository(beanType);
             beans.put(beanType, repository);
             return repository;
