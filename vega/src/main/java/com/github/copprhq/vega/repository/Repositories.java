@@ -1,7 +1,7 @@
 package com.github.copprhq.vega.repository;
 
 import com.coppr.supernova.extension.Extensible;
-import com.github.copprhq.vega.Properties;
+import com.github.copprhq.vega.repository.provider.RepositoryProvider;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -15,10 +15,11 @@ public class Repositories extends Extensible {
 
     private final Map<Class<?>, Repository<?, ?>> repositories =
             new ConcurrentHashMap<>();
-    private final Properties properties;
 
-    public Repositories(Properties properties) {
-        this.properties = Objects.requireNonNull(properties);
+    private final RepositoryProvider repositoryProvider;
+
+    public Repositories(RepositoryProvider repositoryProvider) {
+        this.repositoryProvider = repositoryProvider;
     }
 
     @SuppressWarnings("unchecked")
@@ -38,8 +39,8 @@ public class Repositories extends Extensible {
         Class<K> keyType = (Class<K>) types[0];
         Class<E> entityType = (Class<E>) types[1];
 
-        Repository<K, E> implementation = properties.repositoryProvider()
-                .create(repositoryClass, keyType, entityType);
+        Repository<K, E> implementation = repositoryProvider.create(
+                repositoryClass, keyType, entityType);
 
         R repository = (R) Proxy.newProxyInstance(
                 repositoryClass.getClassLoader(),

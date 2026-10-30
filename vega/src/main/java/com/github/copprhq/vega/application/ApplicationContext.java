@@ -1,9 +1,9 @@
 package com.github.copprhq.vega.application;
 
-import com.github.copprhq.vega.Properties;
 import com.github.copprhq.vega.repository.Repository;
 import com.github.copprhq.vega.repository.RepositoryInvocationHandler;
 import com.github.copprhq.vega.repository.RepositoryTypes;
+import com.github.copprhq.vega.repository.provider.RepositoryProvider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -54,7 +54,7 @@ public final class ApplicationContext {
         Class<?> keyType = types[0];
         Class<?> entityType = types[1];
 
-        Repository<?, ?> implementation = getBean(Properties.class).repositoryProvider()
+        Repository<?, ?> implementation = getBean(RepositoryProvider.class)
                 .create(repositoryType, keyType, entityType);
 
         return (R) Proxy.newProxyInstance(repositoryType.getClassLoader(),

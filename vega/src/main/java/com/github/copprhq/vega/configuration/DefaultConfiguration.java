@@ -1,18 +1,17 @@
-package com.github.copprhq.vega;
+package com.github.copprhq.vega.configuration;
 
 import com.github.copprhq.vega.repository.provider.InMemoryRepositoryProvider;
 import com.github.copprhq.vega.repository.provider.RepositoryProvider;
 
-public abstract class Properties {
+/**
+ * This configuration is for when developer don't want to initialize some bean by themselves.
+ */
+@Configuration
+public class DefaultConfiguration {
 
-    public Properties() {
-    }
-
+    @Bean
     public RepositoryProvider repositoryProvider() {
         return new InMemoryRepositoryProvider();
-    }
-
-    public static class VegaProperties extends Properties {
     }
 
 }

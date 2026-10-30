@@ -1,9 +1,10 @@
 package com.github.copprhq.vega.application;
 
 import com.github.copprhq.vega.DependencyInjection;
-import com.github.copprhq.vega.Properties;
 import com.github.copprhq.vega.command.CommandHandler;
 import com.github.copprhq.vega.component.Component;
+import com.github.copprhq.vega.configuration.Configuration;
+import com.github.copprhq.vega.configuration.ConfigurationProcessor;
 import com.github.copprhq.vega.repository.Repository;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -40,14 +41,14 @@ public class ApplicationFactory {
             String applicationPackage = applicationClass.getPackageName();
 
             ApplicationContext context = new ApplicationContext();
+            ConfigurationProcessor configurationProcessor = new ConfigurationProcessor(context);
 
             ClassInfoList candidates = scanResult.getClassesImplementing(Repository.class)
                     .union(scanResult.getClassesImplementing(CommandHandler.class))
                     .union(scanResult.getClassesWithAnnotation(Component.class.getName()))
                     .union(scanResult.getClassesWithAnnotation(
-                            DependencyInjection.class.getName()));
-
-            Properties properties = null;
+                            DependencyInjection.class.getName()))
+                    .union(scanResult.getClassesWithAnnotation(Configuration.class));
 
             for (ClassInfo info : candidates) {
                 if (!info.getPackageName().startsWith(applicationPackage)) {
@@ -60,15 +61,9 @@ public class ApplicationFactory {
                     continue;
                 }
 
-                if (Properties.class.isAssignableFrom(candidate)) {
-                    properties = (Properties) candidate.getDeclaredConstructor().newInstance();
-                    context.addBean(Properties.class, properties);
+                if (candidate.isAnnotationPresent(Configuration.class)) {
+                    configurationProcessor.process(candidate);
                     continue;
-                }
-
-                if (properties == null) {
-                    properties = new Properties.VegaProperties();
-                    context.addBean(Properties.class, properties);
                 }
 
                 context.addBean(candidate, context.getBean(candidate));
