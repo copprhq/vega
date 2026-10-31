@@ -5,6 +5,7 @@ import com.github.copprhq.vega.command.CommandHandler;
 import com.github.copprhq.vega.component.Component;
 import com.github.copprhq.vega.configuration.Configuration;
 import com.github.copprhq.vega.configuration.ConfigurationProcessor;
+import com.github.copprhq.vega.configuration.DefaultConfiguration;
 import com.github.copprhq.vega.repository.Repository;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -42,6 +43,7 @@ public class ApplicationFactory {
 
             ApplicationContext context = new ApplicationContext();
             ConfigurationProcessor configurationProcessor = new ConfigurationProcessor(context);
+            configurationProcessor.process(DefaultConfiguration.class);
 
             ClassInfoList candidates = scanResult.getClassesImplementing(Repository.class)
                     .union(scanResult.getClassesImplementing(CommandHandler.class))
